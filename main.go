@@ -23,5 +23,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Latest entry ID: ", id)
+	entries, err := client.NewEntries(id - 10)
+	fmt.Println("Entries: %v", entries)
 }

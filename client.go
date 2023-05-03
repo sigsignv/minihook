@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	miniflux "miniflux.app/client"
 )
@@ -9,6 +10,15 @@ import (
 type Client struct {
 	Server string
 	Token  string
+}
+
+type Entry struct {
+	ID      int64
+	Title   string
+	URL     string
+	Date    time.Time
+	Content string
+	Author  string
 }
 
 func (c *Client) LatestEntryID() (int64, error) {
@@ -27,7 +37,7 @@ func (c *Client) LatestEntryID() (int64, error) {
 	return -1, fmt.Errorf("miniflux has no entry")
 }
 
-func (c *Client) NewEntries(entryID int64) ([]string, error) {
+func (c *Client) NewEntries(entryID int64) ([]Entry, error) {
 	filter := &miniflux.Filter{
 		Order:        "id",
 		Status:       "unread",
@@ -37,11 +47,19 @@ func (c *Client) NewEntries(entryID int64) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	var array []string
+	var results []Entry
 	for _, entry := range entries {
-		array = append(array, entry.Title)
+		r := Entry{
+			ID:      entry.ID,
+			Title:   entry.Title,
+			URL:     entry.URL,
+			Date:    entry.Date,
+			Content: entry.Content,
+			Author:  entry.Author,
+		}
+		results = append(results, r)
 	}
-	return array, nil
+	return results, nil
 }
 
 func (c *Client) Verify() error {

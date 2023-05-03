@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	miniflux "miniflux.app/client"
 )
 
 func main() {
@@ -17,10 +15,13 @@ func main() {
 	if !ok {
 		log.Fatalln("Should set 'MINIFLUX_TOKEN'")
 	}
-	client := miniflux.New(endpoint, token)
-	me, err := client.Me()
-	if err != nil {
-		log.Fatalln("Error: Login failed.")
+	client := &MinifluxClient{
+		Server: endpoint,
+		Token:  token,
 	}
-	fmt.Println(me)
+	id, err := client.LatestEntryID()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Latest entry ID: ", id)
 }

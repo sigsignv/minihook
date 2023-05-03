@@ -15,7 +15,7 @@ func main() {
 	if !ok {
 		log.Fatalln("Should set 'MINIFLUX_TOKEN'")
 	}
-	client := &MinifluxClient{
+	client := &Client{
 		Server: endpoint,
 		Token:  token,
 	}

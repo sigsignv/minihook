@@ -6,12 +6,12 @@ import (
 	miniflux "miniflux.app/client"
 )
 
-type MinifluxClient struct {
+type Client struct {
 	Server string
 	Token  string
 }
 
-func (c *MinifluxClient) LatestEntryID() (int64, error) {
+func (c *Client) LatestEntryID() (int64, error) {
 	filter := &miniflux.Filter{
 		Order:     "id",
 		Direction: "desc",
@@ -27,7 +27,7 @@ func (c *MinifluxClient) LatestEntryID() (int64, error) {
 	return -1, fmt.Errorf("miniflux has no entry")
 }
 
-func (c *MinifluxClient) NewEntries(entryID int64) ([]string, error) {
+func (c *Client) NewEntries(entryID int64) ([]string, error) {
 	filter := &miniflux.Filter{
 		Order:        "id",
 		Status:       "unread",
@@ -44,13 +44,13 @@ func (c *MinifluxClient) NewEntries(entryID int64) ([]string, error) {
 	return array, nil
 }
 
-func (c *MinifluxClient) Verify() error {
+func (c *Client) Verify() error {
 	client := miniflux.New(c.Server, c.Token)
 	_, err := client.Me()
 	return err
 }
 
-func (c *MinifluxClient) queryEntries(filter *miniflux.Filter) (miniflux.Entries, error) {
+func (c *Client) queryEntries(filter *miniflux.Filter) (miniflux.Entries, error) {
 	client := miniflux.New(c.Server, c.Token)
 	r, err := client.Entries(filter)
 	if err != nil {

@@ -21,6 +21,21 @@ type Entry struct {
 	Author  string
 }
 
+func NewClient(c *Config) (*Client, error) {
+	if c.Server == "" {
+		return nil, fmt.Errorf("server is empty")
+	}
+	if c.Token == "" {
+		return nil, fmt.Errorf("token is empty")
+	}
+
+	client := &Client{
+		Server: c.Server,
+		Token:  c.Token,
+	}
+	return client, nil
+}
+
 func (c *Client) LatestEntryID() (int64, error) {
 	filter := &miniflux.Filter{
 		Order:     "id",

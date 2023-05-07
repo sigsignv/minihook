@@ -7,17 +7,17 @@ import (
 )
 
 func main() {
-	endpoint, ok := os.LookupEnv("MINIFLUX_ENDPOINT")
-	if !ok {
-		log.Fatalln("Should set 'MINIFLUX_ENDPOINT'")
+	f, err := os.Open("./minihook.toml")
+	if err != nil {
+		log.Fatal(err)
 	}
-	token, ok := os.LookupEnv("MINIFLUX_TOKEN")
-	if !ok {
-		log.Fatalln("Should set 'MINIFLUX_TOKEN'")
+	config, err := LoadConfig(f)
+	if err != nil {
+		log.Fatal(err)
 	}
-	client := &Client{
-		Server: endpoint,
-		Token:  token,
+	client, err := NewClient(config)
+	if err != nil {
+		log.Fatal(err)
 	}
 	id, err := client.LatestEntryID()
 	if err != nil {

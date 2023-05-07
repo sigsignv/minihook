@@ -77,12 +77,6 @@ func (c *Client) NewEntries(entryID int64) ([]Entry, error) {
 	return results, nil
 }
 
-func (c *Client) Verify() error {
-	client := miniflux.New(c.Server, c.Token)
-	_, err := client.Me()
-	return err
-}
-
 func (c *Client) queryEntries(filter *miniflux.Filter) (miniflux.Entries, error) {
 	client := miniflux.New(c.Server, c.Token)
 	r, err := client.Entries(filter)

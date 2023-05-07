@@ -33,55 +33,64 @@ func NewClient(c *Config) (*Client, error) {
 		Server: c.Server,
 		Token:  c.Token,
 	}
+
 	return client, nil
 }
 
 func (c *Client) LatestEntryID() (int64, error) {
-	filter := &miniflux.Filter{
+	f := &miniflux.Filter{
 		Order:     "id",
 		Direction: "desc",
 		Limit:     1,
 	}
-	entries, err := c.queryEntries(filter)
+
+	r, err := c.queryEntries(f)
 	if err != nil {
 		return -1, err
 	}
-	for _, entry := range entries {
-		return entry.ID, nil
+
+	for _, e := range r {
+		return e.ID, nil
 	}
+
 	return -1, fmt.Errorf("miniflux has no entry")
 }
 
 func (c *Client) NewEntries(entryID int64) ([]Entry, error) {
-	filter := &miniflux.Filter{
+	f := &miniflux.Filter{
 		Order:        "id",
 		Status:       "unread",
 		AfterEntryID: entryID,
 	}
-	entries, err := c.queryEntries(filter)
+
+	r, err := c.queryEntries(f)
 	if err != nil {
 		return nil, err
 	}
-	var results []Entry
-	for _, entry := range entries {
-		r := Entry{
-			ID:      entry.ID,
-			Title:   entry.Title,
-			URL:     entry.URL,
-			Date:    entry.Date,
-			Content: entry.Content,
-			Author:  entry.Author,
+
+	var entries []Entry
+	for _, e := range r {
+		entry := Entry{
+			ID:      e.ID,
+			Title:   e.Title,
+			URL:     e.URL,
+			Date:    e.Date,
+			Content: e.Content,
+			Author:  e.Author,
 		}
-		results = append(results, r)
+		entries = append(entries, entry)
 	}
-	return results, nil
+
+	return entries, nil
 }
 
 func (c *Client) queryEntries(filter *miniflux.Filter) (miniflux.Entries, error) {
-	client := miniflux.New(c.Server, c.Token)
-	r, err := client.Entries(filter)
+	m := miniflux.New(c.Server, c.Token)
+
+	r, err := m.Entries(filter)
 	if err != nil {
 		return nil, err
 	}
+
 	return r.Entries, nil
 }

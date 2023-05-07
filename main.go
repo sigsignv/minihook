@@ -23,6 +23,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	entries, err := client.NewEntries(id - 10)
-	fmt.Println("Entries: %v", entries)
+	entries, _ := client.NewEntries(id - 10)
+	fmt.Printf("%v\n", entries)
 }

@@ -94,3 +94,7 @@ func (c *Client) queryEntries(filter *miniflux.Filter) (miniflux.Entries, error)
 
 	return r.Entries, nil
 }
+
+func (e Entry) String() string {
+	return fmt.Sprintf("%d: \"%s\" (%s)", e.ID, e.Title, e.URL)
+}

@@ -1,13 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 )
 
 func main() {
-	f, err := os.Open("./minihook.toml")
+	cli := flag.NewFlagSet("minihook", flag.ExitOnError)
+	var (
+		c = cli.String("c", "./minihook.toml", "Set config location")
+		v = cli.Bool("v", false, "Show version")
+	)
+	cli.Parse(os.Args[1:])
+
+	if *v {
+		fmt.Println("v0.1.0")
+		os.Exit(0)
+	}
+
+	f, err := os.Open(*c)
 	if err != nil {
 		log.Fatal(err)
 	}

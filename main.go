@@ -26,6 +26,7 @@ func main() {
 	cli := flag.NewFlagSet("minihook", flag.ExitOnError)
 	var (
 		c = cli.String("c", "./minihook.toml", "Set config location")
+		n = cli.Bool("n", false, "Dry run")
 		p = cli.String("p", "./position.json", "Set position file location")
 		v = cli.Bool("v", false, "Show version")
 	)
@@ -61,8 +62,10 @@ func main() {
 		}
 	}
 
-	err = SavePosition(*p, cur)
-	if err != nil {
-		log.Fatal(err)
+	if !*n {
+		err = SavePosition(*p, cur)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

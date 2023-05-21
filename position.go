@@ -3,14 +3,15 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 )
 
 type Position struct {
 	ID int64 `json:"id"`
 }
 
-func LoadPosition(filepath string) (int64, error) {
-	f, err := os.Open(filepath)
+func LoadPosition(path string) (int64, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return -1, nil
@@ -21,16 +22,16 @@ func LoadPosition(filepath string) (int64, error) {
 
 	var p Position
 	d := json.NewDecoder(f)
-	err = d.Decode(&p)
-	if err != nil {
+	if err := d.Decode(&p); err != nil {
 		return -1, err
 	}
 
 	return p.ID, nil
 }
 
-func SavePosition(filepath string, id int64) error {
-	f, err := os.Create(filepath)
+func SavePosition(path string, id int64) (err error) {
+	dir, file := filepath.Split(path)
+	f, err := os.CreateTemp(dir, file)
 	if err != nil {
 		return err
 	}
@@ -41,9 +42,13 @@ func SavePosition(filepath string, id int64) error {
 	}
 
 	e := json.NewEncoder(f)
-	err = e.Encode(p)
-	if err != nil {
+	if err := e.Encode(p); err != nil {
 		return err
 	}
+
+	if err := os.Rename(f.Name(), path); err != nil {
+		return err
+	}
+
 	return nil
 }

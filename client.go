@@ -21,20 +21,20 @@ type Entry struct {
 	Author  string
 }
 
-func NewClient(c *Config) (*Client, error) {
-	if c.Server == "" {
-		return nil, fmt.Errorf("server is empty")
+func NewClient(config *Config) (*Client, error) {
+	if config.Server == "" {
+		return nil, fmt.Errorf("[Client] Server is empty")
 	}
-	if c.Token == "" {
-		return nil, fmt.Errorf("token is empty")
-	}
-
-	client := &Client{
-		Server: c.Server,
-		Token:  c.Token,
+	if config.Token == "" {
+		return nil, fmt.Errorf("[Client] Token is empty")
 	}
 
-	return client, nil
+	c := &Client{
+		Server: config.Server,
+		Token:  config.Token,
+	}
+
+	return c, nil
 }
 
 func (c *Client) LatestEntryID() (int64, error) {

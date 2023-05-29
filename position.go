@@ -29,7 +29,7 @@ func LoadPosition(path string) (int64, error) {
 	return p.ID, nil
 }
 
-func SavePosition(path string, id int64) (err error) {
+func SavePosition(path string, id int64) error {
 	dir, file := filepath.Split(path)
 	f, err := os.CreateTemp(dir, file)
 	if err != nil {

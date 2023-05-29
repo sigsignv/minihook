@@ -19,5 +19,6 @@ func LoadConfig(r io.Reader) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &config, nil
 }

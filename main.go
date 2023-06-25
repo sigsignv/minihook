@@ -48,6 +48,9 @@ func main() {
 			log.Fatal(err)
 		}
 		for _, e := range r {
+			for _, w := range config.Webhook {
+				w.Post(&e)
+			}
 			fmt.Printf("%v\n", e)
 		}
 	}

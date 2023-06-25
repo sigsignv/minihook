@@ -32,18 +32,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	prev, err := LoadPosition(*p)
+	pos, err := LoadPosition(*p)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cur, err := client.LatestEntryID()
+	latest, err := client.LatestEntryID()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if prev != -1 && cur > prev {
-		r, err := client.NewEntries(prev)
+	if pos.IsIncreased(latest) {
+		r, err := client.NewEntries(pos)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -56,7 +56,7 @@ func main() {
 	}
 
 	if !*n {
-		err = SavePosition(*p, cur)
+		err = latest.SaveFile(*p)
 		if err != nil {
 			log.Fatal(err)
 		}

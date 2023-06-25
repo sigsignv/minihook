@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	miniflux "miniflux.app/client"
 )
@@ -10,15 +9,6 @@ import (
 type Client struct {
 	Server string
 	Token  string
-}
-
-type Entry struct {
-	ID      int64
-	Title   string
-	URL     string
-	Date    time.Time
-	Content string
-	Author  string
 }
 
 func NewClient(config *Config) (*Client, error) {
@@ -70,15 +60,11 @@ func (c *Client) NewEntries(p *Position) ([]Entry, error) {
 
 	var entries []Entry
 	for _, e := range r {
-		entry := Entry{
-			ID:      e.ID,
-			Title:   e.Title,
-			URL:     e.URL,
-			Date:    e.Date,
-			Content: e.Content,
-			Author:  e.Author,
+		entry, err := NewEntry(e)
+		if err != nil {
+			continue
 		}
-		entries = append(entries, entry)
+		entries = append(entries, *entry)
 	}
 
 	return entries, nil
@@ -93,8 +79,4 @@ func (c *Client) queryEntries(filter *miniflux.Filter) (miniflux.Entries, error)
 	}
 
 	return r.Entries, nil
-}
-
-func (e Entry) String() string {
-	return fmt.Sprintf("%d: \"%s\" (%s)", e.ID, e.Title, e.URL)
 }

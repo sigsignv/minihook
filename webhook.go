@@ -3,9 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"time"
 )
 
 type Webhook struct {
@@ -13,21 +11,7 @@ type Webhook struct {
 }
 
 func (w *Webhook) Post(e *Entry) error {
-	t, err := formatRFC3339(e.Date)
-	if err != nil {
-		return err
-	}
-
-	body := map[string]string{
-		"id":      fmt.Sprintf("%d", e.ID),
-		"title":   e.Title,
-		"url":     e.URL,
-		"date":    t,
-		"content": e.Content,
-		"author":  e.Author,
-	}
-
-	j, err := json.Marshal(body)
+	j, err := json.Marshal(e)
 	if err != nil {
 		return err
 	}
@@ -39,13 +23,4 @@ func (w *Webhook) Post(e *Entry) error {
 	defer resp.Body.Close()
 
 	return nil
-}
-
-func formatRFC3339(t time.Time) (string, error) {
-	b, err := t.MarshalText()
-	if err != nil {
-		return "", err
-	}
-
-	return string(b), nil
 }

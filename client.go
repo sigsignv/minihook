@@ -37,7 +37,7 @@ func NewClient(config *Config) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) LatestEntryID() (int64, error) {
+func (c *Client) LatestEntryID() (*Position, error) {
 	f := &miniflux.Filter{
 		Order:     "id",
 		Direction: "desc",
@@ -46,21 +46,21 @@ func (c *Client) LatestEntryID() (int64, error) {
 
 	r, err := c.queryEntries(f)
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 
 	for _, e := range r {
-		return e.ID, nil
+		return &Position{ID: e.ID}, nil
 	}
 
-	return -1, fmt.Errorf("miniflux has no entry")
+	return nil, fmt.Errorf("miniflux has no entry")
 }
 
-func (c *Client) NewEntries(entryID int64) ([]Entry, error) {
+func (c *Client) NewEntries(p *Position) ([]Entry, error) {
 	f := &miniflux.Filter{
 		Order:        "id",
 		Status:       "unread",
-		AfterEntryID: entryID,
+		AfterEntryID: p.ID,
 	}
 
 	r, err := c.queryEntries(f)

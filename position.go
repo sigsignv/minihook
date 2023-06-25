@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -10,26 +11,44 @@ type Position struct {
 	ID int64 `json:"id"`
 }
 
-func LoadPosition(path string) (int64, error) {
+func NewPosition(r io.Reader) (*Position, error) {
+	var p Position
+
+	d := json.NewDecoder(r)
+	if err := d.Decode(&p); err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+func LoadPosition(path string) (*Position, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return -1, nil
+			return &Position{ID: -1}, nil
 		}
-		return -1, err
+		return nil, err
 	}
 	defer f.Close()
 
-	var p Position
-	d := json.NewDecoder(f)
-	if err := d.Decode(&p); err != nil {
-		return -1, err
-	}
-
-	return p.ID, nil
+	return NewPosition(f)
 }
 
-func SavePosition(path string, id int64) error {
+func (p *Position) IsIncreased(latest *Position) bool {
+	return p.ID < latest.ID
+}
+
+func (p *Position) Save(w io.Writer) error {
+	e := json.NewEncoder(w)
+	if err := e.Encode(p); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *Position) SaveFile(path string) error {
 	dir, file := filepath.Split(path)
 	f, err := os.CreateTemp(dir, file)
 	if err != nil {
@@ -37,12 +56,7 @@ func SavePosition(path string, id int64) error {
 	}
 	defer f.Close()
 
-	p := Position{
-		ID: id,
-	}
-
-	e := json.NewEncoder(f)
-	if err := e.Encode(p); err != nil {
+	if err := p.Save(f); err != nil {
 		return err
 	}
 

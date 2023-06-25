@@ -49,7 +49,7 @@ func main() {
 		}
 		for _, e := range r {
 			for _, w := range config.Webhook {
-				w.Post(&e)
+				w.Post(e)
 			}
 			fmt.Printf("%v\n", e)
 		}

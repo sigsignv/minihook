@@ -12,11 +12,8 @@ type Client struct {
 }
 
 func NewClient(config *Config) (*Client, error) {
-	if config.Server == "" {
-		return nil, fmt.Errorf("[Client] Server is empty")
-	}
-	if config.Token == "" {
-		return nil, fmt.Errorf("[Client] Token is empty")
+	if config.Server == "" || config.Token == "" {
+		return nil, fmt.Errorf("[minihook] config is empty")
 	}
 
 	c := &Client{
@@ -46,7 +43,7 @@ func (c *Client) LatestEntryID() (*Position, error) {
 	return nil, fmt.Errorf("miniflux has no entry")
 }
 
-func (c *Client) NewEntries(p *Position) ([]Entry, error) {
+func (c *Client) NewEntries(p *Position) ([]*Entry, error) {
 	f := &miniflux.Filter{
 		Order:        "id",
 		Status:       "unread",
@@ -58,16 +55,7 @@ func (c *Client) NewEntries(p *Position) ([]Entry, error) {
 		return nil, err
 	}
 
-	var entries []Entry
-	for _, e := range r {
-		entry, err := NewEntry(e)
-		if err != nil {
-			continue
-		}
-		entries = append(entries, *entry)
-	}
-
-	return entries, nil
+	return NewEntries(r)
 }
 
 func (c *Client) queryEntries(filter *miniflux.Filter) (miniflux.Entries, error) {

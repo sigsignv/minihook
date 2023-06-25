@@ -34,6 +34,20 @@ func NewEntry(m *miniflux.Entry) (*Entry, error) {
 	return e, nil
 }
 
+func NewEntries(m miniflux.Entries) ([]*Entry, error) {
+	var entries []*Entry
+
+	for _, r := range m {
+		e, err := NewEntry(r)
+		if err != nil {
+			return nil, err
+		}
+		entries = append(entries, e)
+	}
+
+	return entries, nil
+}
+
 func (e Entry) String() string {
 	return fmt.Sprintf("%d: \"%s\" (%s)", e.ID, e.Title, e.URL)
 }

@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	Server string `toml:"server"`
-	Token  string `toml:"token"`
+	Server  string    `toml:"server"`
+	Token   string    `toml:"token"`
+	Webhook []Webhook `toml:"webhook"`
 }
 
 func LoadConfig(r io.Reader) (*Config, error) {

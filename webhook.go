@@ -9,7 +9,7 @@ import (
 )
 
 type Webhook struct {
-	URL string
+	URL string `toml:"url"`
 }
 
 func (w *Webhook) Post(e *Entry) error {

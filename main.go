@@ -7,21 +7,6 @@ import (
 	"os"
 )
 
-func newClientFromFile(filepath string) (*Client, error) {
-	f, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	c, err := LoadConfig(f)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewClient(c)
-}
-
 func main() {
 	cli := flag.NewFlagSet("minihook", flag.ExitOnError)
 	var (
@@ -37,7 +22,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	client, err := newClientFromFile(*c)
+	config, err := LoadConfig(*c)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client, err := NewClient(config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,6 +48,9 @@ func main() {
 			log.Fatal(err)
 		}
 		for _, e := range r {
+			for _, w := range config.Webhook {
+				w.Post(&e)
+			}
 			fmt.Printf("%v\n", e)
 		}
 	}

@@ -1,2 +1,5 @@
 #server = "YOUR_SERVER_ADDRESS"
 #token = "YOUR_API_TOKEN"
+
+#[[webhook]]
+#url = "YOUR_WEBHOOK_ENDPOINT"
